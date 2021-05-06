@@ -135,4 +135,5 @@ dmypy.json
 
 migrations/
 
-*/__pycache__
+blob_storage/
+webrtc_event_logs/
