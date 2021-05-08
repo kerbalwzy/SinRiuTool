@@ -3,9 +3,9 @@ package utils
 import (
 	"fmt"
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
+	"math"
 	"regexp"
 	"strconv"
-	"sync"
 )
 
 var ExcelIllegalCharactersRe = regexp.MustCompile(`[\000-\010]|[\013-\014]|[\016-\037]`)
@@ -15,62 +15,52 @@ const ExcelMaxRowCount = 1048576
 
 //const ExcelMaxRowCount = 2
 
-type SheetData struct {
-	Name    string
-	Content [][]interface{}
+type ExcelSheet struct {
+	Name      string
+	Content   [][]interface{}
+	safeLimit int
 }
 
-type SheetDataContainer struct {
-	SheetName  string
-	dataSheets [][][]interface{} // Excel单个sheet最多只能由1048576行,超出的行数据将保存到复制了名称的sheet
-	rawsLen    int               // 数据行数
-	mutex      sync.Mutex        // 互斥锁
+func (obj *ExcelSheet) Len() int {
+	return len(obj.Content)
 }
 
-func (obj *SheetDataContainer) Len() int {
-	n := 0
-	for _, tempSheet := range obj.dataSheets {
-		n += len(tempSheet)
+func (obj *ExcelSheet) SetSafeLimit(n int) {
+	if n == 0 || n > ExcelMaxRowCount {
+		n = ExcelMaxRowCount
 	}
-	return n
+	obj.safeLimit = n
 }
 
-func (obj *SheetDataContainer) AddRow(row []interface{}) {
-	obj.mutex.Lock()
-	defer obj.mutex.Unlock()
-	if obj.rawsLen == 0 || obj.rawsLen+1 > ExcelMaxRowCount {
-		tempSheet := make([][]interface{}, 0)
-		obj.dataSheets = append(obj.dataSheets, tempSheet)
-		obj.rawsLen = 0
+func (obj *ExcelSheet) Safe() []ExcelSheet {
+	if obj.safeLimit == 0 || obj.safeLimit > ExcelMaxRowCount {
+		obj.safeLimit = ExcelMaxRowCount
 	}
-	tempSheet := &obj.dataSheets[len(obj.dataSheets)-1]
-	*tempSheet = append(*tempSheet, row)
-	obj.rawsLen += 1
-}
-
-func (obj *SheetDataContainer) Data() [][]interface{} {
-	res := make([][]interface{}, 0)
-	for _, tempSheet := range obj.dataSheets {
-		res = append(res, tempSheet...)
+	res := make([]ExcelSheet, 1)
+	if obj.Len() <= obj.safeLimit {
+		res[0] = *obj
+		return res
 	}
-	return res
-}
-
-func (obj *SheetDataContainer) ToSheetData() []SheetData {
-	res := make([]SheetData, 0)
-	for index, tempSheet := range obj.dataSheets {
-		if index == 0 {
-			res = append(res, SheetData{Name: obj.SheetName, Content: tempSheet})
+	// 超出了安全上限
+	for i := 0; i < int(math.Ceil(float64(obj.Len())/float64(obj.safeLimit))); i++ {
+		if i == 0 {
+			res[0] = ExcelSheet{
+				Name:    obj.Name,
+				Content: obj.Content[0:obj.safeLimit],
+			}
 		} else {
-			res = append(res, SheetData{Name: obj.SheetName + strconv.Itoa(index), Content: tempSheet})
+			res = append(res, ExcelSheet{
+				Name:    obj.Name + "-" + strconv.Itoa(i),
+				Content: obj.Content[obj.safeLimit*i : obj.safeLimit*(i+1)],
+			})
 		}
 	}
 	return res
 }
 
-func MakeExcelFp(sheetData ...SheetData) (*excelize.File, error) {
+func MakeExcelFp(data ...ExcelSheet) (*excelize.File, error) {
 	fp := excelize.NewFile()
-	for index, item := range sheetData {
+	for index, item := range data {
 		if index == 0 {
 			fp.SetSheetName("Sheet1", item.Name)
 		} else {
@@ -94,4 +84,12 @@ func MakeExcelFp(sheetData ...SheetData) (*excelize.File, error) {
 		}
 	}
 	return fp, nil
+}
+
+func SafeMakeExcelFp(data ...ExcelSheet) (*excelize.File, error) {
+	tempData := make([]ExcelSheet, 0, len(data))
+	for _, item := range data {
+		tempData = append(tempData, item.Safe()...)
+	}
+	return MakeExcelFp(tempData...)
 }
