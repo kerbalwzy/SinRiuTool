@@ -1,0 +1,49 @@
+转换目标:
+	202001-202103放款数据，erp亚马逊订单 -> 202001-202103退款数据，202001-202103退款的订单
+汇总规则:
+1. 识别每个表的表头为：
+tipo
+Typ
+type
+トランザクションの種類
+统一命名为"type"；
+
+beställnings-id
+Bestellnummer
+bestelnummer
+identyfikator zamówienia
+numéro de la commande
+número de pedido
+Numero ordine
+order id
+注文番号
+统一命名为"order id"；
+
+2. 再表头为“type”下，识别为
+type=
+Ajuste de tarifa
+Ajustement des frais
+Återbetalning
+Chargeback Refund
+Erstattung
+Erstattung durch Rückbuchung
+Fee Adjustment
+Gebührenerstattung
+Gebührenerstattung
+Reembolso
+Reembolso de reversión de cargo
+Refund
+Refund_Retrocharge
+Regolazione dei costi
+Remboursement
+Remboursement de contestation de prélèvement
+Rimborso
+Terugbetaling
+返金
+把该数据表汇总提取
+
+3. 把数据最前端加上数据原始表名称
+4. 再根据汇总表的order id+sku结合信息去erp的亚马逊订单查找订单
+5. 查找出来的订单数据汇总导出。
+
+

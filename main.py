@@ -33,8 +33,8 @@ if MAC:
 # Configuration
 WIDTH = 1000
 HEIGHT = 618
-INDEX_URL = "https://www.baidu.com"
-TITLE = "SinRiu效率工具"
+INDEX_URL = "http://localhost:41001"
+TITLE = "MultiTool"
 
 # Globals
 g_count_windows = 0
@@ -157,12 +157,12 @@ class MainFrame(wx.Frame):
             self.Show()
 
     def setup_icon(self):
-        icon_file = os.path.join(os.getcwd(), "favicon.png")
+        icon_file = os.path.join(os.getcwd(), "icon.png")
         # wx.IconFromBitmap is not available on Linux in wxPython 3.0/4.0
         if os.path.exists(icon_file) and hasattr(wx, "IconFromBitmap"):
             icon = wx.IconFromBitmap(wx.Bitmap(icon_file, wx.BITMAP_TYPE_PNG))
         else:
-            icon = wx.Icon(icon_file, wx.BITMAP_TYPE_ICO)
+            icon = wx.Icon(icon_file, wx.BITMAP_TYPE_PNG)
         self.SetIcon(icon)
 
     def create_menu(self):
