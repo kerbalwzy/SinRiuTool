@@ -33,8 +33,9 @@ if MAC:
 # Configuration
 WIDTH = 1000
 HEIGHT = 618
-INDEX_URL = "http://localhost:41001"
-TITLE = "MultiTool"
+INDEX_URL = "http://localhost:8080"
+# TITLE = "MultiTool"
+TITLE = 'SinRiuTools'
 
 # Globals
 g_count_windows = 0
@@ -116,7 +117,7 @@ class MainFrame(wx.Frame):
         print("[wxpython.py] MainFrame DPI scaled size: %s" % str(size))
 
         wx.Frame.__init__(self, parent=None, id=wx.ID_ANY, title=TITLE, size=(WIDTH, HEIGHT),
-                          style=wx.DEFAULT_FRAME_STYLE ^ wx.MAXIMIZE_BOX ^ wx.RESIZE_BORDER)
+                          style=wx.DEFAULT_FRAME_STYLE)
         # wxPython will set a smaller size when it is bigger
         # than desktop size.
         print("[wxpython.py] MainFrame actual size: %s" % self.GetSize())

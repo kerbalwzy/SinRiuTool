@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/gorilla/websocket"
-	"github.com/kerbalwzy/SinRiuTool/goApp/utils"
+	"github.com/kerbalwzy/SinRiuTool/backendGo/utils"
 	"log"
 	"time"
 )

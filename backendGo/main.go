@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/kerbalwzy/SinRiuTool/goApp/server"
-	"github.com/kerbalwzy/SinRiuTool/goApp/utils"
+	"github.com/kerbalwzy/SinRiuTool/backendGo/server"
+	"github.com/kerbalwzy/SinRiuTool/backendGo/utils"
 	"io"
 	"log"
 	"os"
@@ -13,7 +13,7 @@ func init() {
 	logger.SetLevel(utils.Debug)
 	logger.SetOutput(io.MultiWriter(
 		os.Stdout,
-		utils.NewRotateFileWriter("goApp.log", "./", 3, 1024*1024*100),
+		utils.NewRotateFileWriter("backendGo.log", "./", 3, 1024*1024*100),
 	))
 	logger.SetPrefix("GoApp: ")
 	logger.SetFlags(log.Ldate | log.Lmicroseconds | log.Lshortfile)

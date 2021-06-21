@@ -1,4 +1,4 @@
-module github.com/kerbalwzy/SinRiuTool
+module github.com/kerbalwzy/SinRiuTool/backendGo
 
 go 1.16
 

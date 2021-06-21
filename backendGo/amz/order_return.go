@@ -2,7 +2,7 @@ package amz
 
 import (
 	"errors"
-	"github.com/kerbalwzy/SinRiuTool/goApp/utils"
+	"github.com/kerbalwzy/SinRiuTool/backendGo/utils"
 	"sort"
 	"strconv"
 	"strings"
